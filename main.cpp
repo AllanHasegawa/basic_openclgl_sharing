@@ -107,7 +107,7 @@ GLuint CreateShader(GLenum eShaderType, const std::string &strShaderFile) {
 		switch(eShaderType)
 		{
 			case GL_VERTEX_SHADER: strShaderType = "vertex"; break;
-					       //case GL_GEOMETRY_SHADER: strShaderType = "geometry"; break;
+								   //case GL_GEOMETRY_SHADER: strShaderType = "geometry"; break;
 			case GL_FRAGMENT_SHADER: strShaderType = "fragment"; break;
 		}
 
@@ -286,7 +286,7 @@ int main() {
 			CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
 			CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(), 
 			CL_CONTEXT_PLATFORM,
-				(cl_context_properties)(platforms[0])(), 
+			(cl_context_properties)(platforms[0])(), 
 			0};
 
 		clGetGLContextInfoKHR_fn clGetGLContextInfoKHR =
@@ -308,12 +308,12 @@ int main() {
 			cerr << status << endl;
 			throw runtime_error{"clGetGLContextInfoKHR"};
 		}
-		
+
 		cl_device_id c_cl_gl_device;
 		status = clGetGLContextInfoKHR(cl_properties,
 				CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, sizeof(cl_device_id),
 				&c_cl_gl_device, NULL);
-        if(status != CL_SUCCESS) {
+		if(status != CL_SUCCESS) {
 			cerr << status << endl;
 			throw runtime_error{"clGetGLContextInfoKHR"};
 		}
@@ -322,6 +322,29 @@ int main() {
 		// Create context
 		devices.clear();
 		devices.push_back(move(cl_gl_device));
+
+		cout << string(32, '-') << endl;
+		cout << "Interop OpenGL/OpenCL Devices" << endl;
+		for (cl::Device d : devices) {
+			string t;
+			d.getInfo(CL_DEVICE_NAME, &t);
+			cout << "Device Name: "
+				<< t << endl;
+			cl_device_type dt;
+			d.getInfo(CL_DEVICE_TYPE, &dt);
+			cout << "Device Type: "
+				<< dt << endl;
+			d.getInfo(CL_DRIVER_VERSION, &t);
+			cout << "Device Driver: "
+				<< t << endl;
+			cl_uint dcu;
+			d.getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &dcu);
+			cout << "Device MCU: " << dcu << endl;
+			d.getInfo(CL_DEVICE_EXTENSIONS, &t);
+			cout << "Device Extensions: "
+				<< t << endl;
+		}
+		cout << string(32, '-') << endl;
 
 		//platforms[0].getDevices(CL_DEVICE_TYPE_GPU, &devices);
 		cl_context = cl::Context(devices, cl_properties);
@@ -428,11 +451,11 @@ int main() {
 		int x = (i/4) % wWidth;
 		int y = (i/4) / wWidth;
 		if (i % 4 == 0)
-		if (x < wWidth) {
-			pixels[i] = 255;
-		} else {
-			pixels[i] = 0;
-		}
+			if (x < wWidth) {
+				pixels[i] = 255;
+			} else {
+				pixels[i] = 0;
+			}
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
@@ -442,7 +465,7 @@ int main() {
 
 	try {
 		cl_gl_objs.push_back(cl::ImageGL{cl_context, CL_MEM_WRITE_ONLY,
-			GL_TEXTURE_2D, 0, tex});
+				GL_TEXTURE_2D, 0, tex});
 	} catch(cl::Error error) {
 		cout << error.what()  << error.err() << endl;
 		throw error;
