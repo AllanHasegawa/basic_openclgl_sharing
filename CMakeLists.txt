@@ -23,5 +23,4 @@ set(SRCS
 
 add_executable(oglcl ${SRCS})
 
-#target_link_libraries(simple ${GLFW_STATIC_LIBRARIES})
 target_link_libraries(oglcl ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES} GLEW OpenCL)
