@@ -73,7 +73,7 @@ void manager(cl::CommandQueue& queue, cl::Kernel& gl_kernel,
 		queue.enqueueReleaseGLObjects(&cl_gl_objs);
 
 		queue.finish();
-		//std::this_thread::sleep_for(DREAM_FRAME_TIME);
+		std::this_thread::sleep_for(DREAM_FRAME_TIME);
 		{
 			lock_guard<mutex> lk(m);
 			ready = true;
@@ -380,8 +380,6 @@ int main() {
 	glfwSetKeyCallback(window, key_callback);
 
 	glfwSetFramebufferSizeCallback(window, reshape);
-	int i = 0;
-
 
 	double lastTime = glfwGetTime();
 	double currentTime = glfwGetTime();
@@ -449,13 +447,14 @@ int main() {
 	array<GLfloat,640*480*4> pixels;
 	for (int i = 0; i < pixels.size(); ++i) {
 		int x = (i/4) % wWidth;
-		int y = (i/4) / wWidth;
-		if (i % 4 == 0)
+		//int y = (i/4) / wWidth;
+		if (i % 4 == 0) {
 			if (x < wWidth) {
 				pixels[i] = 255;
 			} else {
 				pixels[i] = 0;
 			}
+		}
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
